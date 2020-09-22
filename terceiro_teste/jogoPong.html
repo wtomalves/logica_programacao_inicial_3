@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogando Pong</title>
+
+</head>
+<body>
+  <canvas width="600" height="400"></canvas>
+  <script>
+
+    function desenhaFundo() {
+      pincel.fillStyle = 'black';
+      pincel.fillRect(0, 0, 600, 400);
+    }
+
+    function desenharBolinha(x, y, raio) {
+      pincel.fillStyle = 'white';
+      pincel.beginPath();
+      pincel.arc(x, y, raio, 0, 2 * 3.14);
+      pincel.fill();
+    }
+
+    function verificarColisao () {
+      bolinhaXpos += bolinhaXvelocidade;
+      bolinhaYpos += bolinhaYvelocidade;
+
+      if (bolinhaXpos + colisaoBolinha > 590 || bolinhaXpos - colisaoBolinha < 10) {
+        bolinhaXvelocidade *= -1;
+      }
+
+      if (bolinhaYpos + colisaoBolinha > 390 || bolinhaYpos - colisaoBolinha < 10) {
+        bolinhaYvelocidade *= -1;
+      }
+    }
+
+
+    function desenhaRaquete(x, y, comprimento, altura) {
+      pincel.fillStyle = 'white';
+      pincel.beginPath();
+      pincel.fillRect(x, y, comprimento, altura);
+      pincel.fill();
+    }
+
+
+
+    function verificaColisaoRaquete() {
+        if (bolinhaXpos - colisaoBolinha < xRaquete + raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaquete + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaquete) {
+          bolinhaXvelocidade *= -1;
+        }
+    }
+
+    function verfificarColisaoOponente() {
+      if (bolinhaXpos - colisaoBolinha > xRaqueteOponente - raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaqueteOponente + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaqueteOponente) {
+          bolinhaXvelocidade *= -1;
+        }
+
+      if (bolinhaXpos - colisaoBolinha > xRaqueteOponente + raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaqueteOponente + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaqueteOponente) {
+          bolinhaXvelocidade *= -1;
+        }
+    }
+
+
+
+    function movimentarRaquete(evento) {
+      if (evento.keyCode == cima && yRaquete >= 15) {
+        yRaquete -= espaco;
+      }
+      if (evento.keyCode == baixo && yRaquete <= 285) {
+        yRaquete += espaco;
+      }
+
+    }
+
+    function movimentaRaqueteOponente() {
+      velocidadeYOponente = bolinhaYpos - yRaqueteOponente - raqueteComprimento / 2 - 30;
+      yRaqueteOponente += velocidadeYOponente;
+    }
+
+    function marcarPonto() {
+      if (bolinhaXpos >  590) {
+        meusPontos += 1;
+
+      }
+
+      if (bolinhaXpos <= 12) {
+        pontosOponente += 1;
+
+      }
+    }
+
+    function apresentarPlacar() {
+      pincel.fillStyle = 'orange';
+      pincel.fillRect(140, 5, 60, 25);
+      pincel.fillStyle = 'white';
+      pincel.fillText(meusPontos, 165, 26);
+
+
+      pincel.fillStyle = 'orange';
+      pincel.fillRect(400, 5, 60, 25);
+      pincel.fillStyle = 'white';
+      pincel.fillText(pontosOponente, 425, 26 )
+      pincel.font = '20px serif';
+    }
+
+
+
+    function desenhaJogo() {
+      desenhaFundo();
+      desenharBolinha(bolinhaXpos, bolinhaYpos, tamanhoBolinha);
+      verificarColisao();
+      desenhaRaquete(xRaquete, yRaquete, raqueteComprimento, raqueteAltura);
+      desenhaRaquete(xRaqueteOponente, yRaqueteOponente, raqueteComprimento, raqueteAltura);
+      verificaColisaoRaquete();
+      verfificarColisaoOponente();
+      movimentaRaqueteOponente();
+      marcarPonto();
+      apresentarPlacar();
+
+    }
+
+    //variaveis que interagem com o canvas
+    let tela = document.querySelector('canvas');
+    let pincel = tela.getContext('2d');
+
+    //variaveis da bolinha
+    let bolinhaXpos = 300;
+    let bolinhaYpos = 200;
+    let tamanhoBolinha = 10;
+
+    //variavel bolinha colisao(raio)
+    let colisaoBolinha = tamanhoBolinha / 2;
+
+    //variaveis velocidade da Bolinha
+    let bolinhaXvelocidade = 3;
+    let bolinhaYvelocidade = 3;
+
+    //variaveis da raquete lado esquerdo
+    let xRaquete = 5;
+    let yRaquete = 150;
+    let raqueteComprimento = 10;
+    let raqueteAltura = 100;
+
+    //variaveis raquete do oponente
+    let xRaqueteOponente = 585;
+    let yRaqueteOponente = 150;
+    let velocidadeYOponente;
+
+
+    //variaveis setas subir e descer
+    let cima = 38;
+    let baixo = 40;
+    let espaco = 10;
+
+    //variaveis do placar do jogo
+    let meusPontos = 0;
+    let pontosOponente = 0;
+
+
+
+
+
+
+
+
+    setInterval(desenhaJogo, 20)
+    document.onkeydown = movimentarRaquete;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*function movendoBolinha() {
+
+      if (x < 590 && indo) {
+
+        desenharBolinha(x, y, 10);
+        x += 2;
+      } else if (x == 590) {
+        indo = false
+      }
+
+      if (x > 0 && indo == false){
+
+        desenharBolinha(x, y, 10);
+        x -= 2;
+      } else if (x == 0) {
+        indo = true;
+      }
+
+      if (y < 390 && indo) {
+        desenharBolinha(x, y, 10);
+        y += 2;
+      } else if (y == 390) {
+        indo = false
+      }
+
+      if (y > 0 && indo == false){
+
+        desenharBolinha(x, y, 10);
+        y -= 2;
+      } else if (y == 0) {
+        indo = true;
+      }
+
+
+    }
+
+
+
+    setInterval(movendoBolinha, 10)
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+
+</body>
+</html>
