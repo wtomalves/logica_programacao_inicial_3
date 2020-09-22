@@ -3,12 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogando Pong</title>
+  <title>COPIA</title>
 
 </head>
 <body>
   <canvas width="600" height="400"></canvas>
+
+  <audio id="trilha" preload="metadata">
+    <source src="pong music/Pong - Sons/trilha.mp3" type="audio/mpeg">
+  </audio>
+
+   <audio id="raquetada" preload="metadata">
+    <source src="pong music/Pong - Sons/raquetada.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="pontos" preload="metadata">
+    <source src="pong music/Pong - Sons/ponto.mp3" type="audio/mpeg">
+  </audio>
+
+
+
   <script>
+
 
     function desenhaFundo() {
       pincel.fillStyle = 'black';
@@ -33,6 +49,7 @@
       if (bolinhaYpos + colisaoBolinha > 390 || bolinhaYpos - colisaoBolinha < 10) {
         bolinhaYvelocidade *= -1;
       }
+
     }
 
 
@@ -48,17 +65,18 @@
     function verificaColisaoRaquete() {
         if (bolinhaXpos - colisaoBolinha < xRaquete + raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaquete + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaquete) {
           bolinhaXvelocidade *= -1;
+          raquetada.play();
         }
     }
 
     function verfificarColisaoOponente() {
-      if (bolinhaXpos - colisaoBolinha > xRaqueteOponente - raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaqueteOponente + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaqueteOponente) {
+
+        if (bolinhaXpos + colisaoBolinha > xRaqueteOponente - raqueteComprimento && bolinhaYpos + colisaoBolinha < yRaqueteOponente + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaqueteOponente) {
           bolinhaXvelocidade *= -1;
+          raquetada.play();
+
         }
 
-      if (bolinhaXpos - colisaoBolinha > xRaqueteOponente + raqueteComprimento && bolinhaYpos - colisaoBolinha < yRaqueteOponente + raqueteAltura && bolinhaYpos + colisaoBolinha > yRaqueteOponente) {
-          bolinhaXvelocidade *= -1;
-        }
     }
 
 
@@ -74,20 +92,37 @@
     }
 
     function movimentaRaqueteOponente() {
-      velocidadeYOponente = bolinhaYpos - yRaqueteOponente - raqueteComprimento / 2 - 30;
+      calculaChanceDeErrar();
+      velocidadeYOponente = bolinhaYpos - yRaqueteOponente - raqueteComprimento / 2 - chanceDeErrar;
       yRaqueteOponente += velocidadeYOponente;
+
+    }
+
+    function calculaChanceDeErrar() {
+      if (pontosOponente >= meusPontos) {
+        chanceDeErrar += 1;
+        if (chanceDeErrar >= 79){
+        chanceDeErrar = 90;
+        }
+      } else {
+        chanceDeErrar -= 1;
+        if (chanceDeErrar <= 85){
+        chanceDeErrar = 85;
+        }
+      }
     }
 
     function marcarPonto() {
-      if (bolinhaXpos >  590) {
+      if (bolinhaXpos >  585) {
         meusPontos += 1;
-
+        pontos.play();
       }
 
       if (bolinhaXpos <= 12) {
         pontosOponente += 1;
-
+        pontos.play();
       }
+
     }
 
     function apresentarPlacar() {
@@ -104,9 +139,8 @@
       pincel.font = '20px serif';
     }
 
-
-
     function desenhaJogo() {
+
       desenhaFundo();
       desenharBolinha(bolinhaXpos, bolinhaYpos, tamanhoBolinha);
       verificarColisao();
@@ -117,7 +151,7 @@
       movimentaRaqueteOponente();
       marcarPonto();
       apresentarPlacar();
-
+      trilha.play();
     }
 
     //variaveis que interagem com o canvas
@@ -127,133 +161,46 @@
     //variaveis da bolinha
     let bolinhaXpos = 300;
     let bolinhaYpos = 200;
-    let tamanhoBolinha = 10;
+    let tamanhoBolinha = 15;
 
     //variavel bolinha colisao(raio)
     let colisaoBolinha = tamanhoBolinha / 2;
 
     //variaveis velocidade da Bolinha
-    let bolinhaXvelocidade = 3;
-    let bolinhaYvelocidade = 3;
+    let bolinhaXvelocidade = 6;
+    let bolinhaYvelocidade = 6;
 
     //variaveis da raquete lado esquerdo
-    let xRaquete = 5;
+    let xRaquete = 7;
     let yRaquete = 150;
     let raqueteComprimento = 10;
     let raqueteAltura = 100;
 
     //variaveis raquete do oponente
-    let xRaqueteOponente = 585;
+    let xRaqueteOponente = 583;
     let yRaqueteOponente = 150;
     let velocidadeYOponente;
+    let chanceDeErrar = 0;
 
 
     //variaveis setas subir e descer
     let cima = 38;
     let baixo = 40;
-    let espaco = 10;
+    let espaco = 100;
 
     //variaveis do placar do jogo
     let meusPontos = 0;
     let pontosOponente = 0;
 
-
-
-
-
+    //variaveis do som do jogo
+    let trilha = document.querySelector('#trilha');
+    let raquetada = document.querySelector('#raquetada');
+    let somDosPontos = document.querySelector('#pontos');
 
 
 
     setInterval(desenhaJogo, 20)
     document.onkeydown = movimentarRaquete;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*function movendoBolinha() {
-
-      if (x < 590 && indo) {
-
-        desenharBolinha(x, y, 10);
-        x += 2;
-      } else if (x == 590) {
-        indo = false
-      }
-
-      if (x > 0 && indo == false){
-
-        desenharBolinha(x, y, 10);
-        x -= 2;
-      } else if (x == 0) {
-        indo = true;
-      }
-
-      if (y < 390 && indo) {
-        desenharBolinha(x, y, 10);
-        y += 2;
-      } else if (y == 390) {
-        indo = false
-      }
-
-      if (y > 0 && indo == false){
-
-        desenharBolinha(x, y, 10);
-        y -= 2;
-      } else if (y == 0) {
-        indo = true;
-      }
-
-
-    }
-
-
-
-    setInterval(movendoBolinha, 10)
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   </script>
 
